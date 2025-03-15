@@ -8,3 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Project-generated files
+*.log
+temp/
+
+# Environment variables
+.env

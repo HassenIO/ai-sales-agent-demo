@@ -1,3 +1,3 @@
 run:
-	@python src/hello.py
+	@streamlit run src/app.py
 .PHONY: run

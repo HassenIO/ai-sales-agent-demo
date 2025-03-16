@@ -95,6 +95,9 @@ def analyze_sales_conversation(text):
 
 if __name__ == "__main__":
     st.title("🎙 AI Sales Call Analyzer")
+    st.info(
+        "[GitHub Source Code](https://github.com/HassenIO/ai-sales-agent-demo) • Created by [Hassen Taidirt](https://linkedin.com/in/htaidirt)"
+    )
     st.write(
         "Upload an MP3 sales call, and our AI Coach will transcribe it and provide recommendations."
     )

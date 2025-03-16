@@ -1,5 +1,5 @@
 [project]
-name = "call-center-coach"
+name = "ai-sales-coach"
 version = "0.1.0"
 description = "A demo about how AI can be a Sales Coach"
 readme = "README.md"

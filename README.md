@@ -33,3 +33,32 @@ To test the application, we provide some sample audio data located in `/dataset`
 - Ensure to have `uv` installed
 - Create an environment and install packages using `uv sync`
 - Run the application using `make run`
+
+## Online demo
+
+The application was deployed online for testing.
+
+First, download the following [sample sales audio call](https://github.com/HassenIO/ai-sales-agent-demo/raw/refs/heads/master/dataset/sample_call.mp3).
+
+The sample audio was truncated at the moment the customer raises an concern. **The goal is to see if the AI Coach provides the suitable salesperson response**.
+
+> NOTA: To access the full untruncated example, head to the [following YouTube video](https://www.youtube.com/watch?v=4ostqJD3Psc).
+
+Once you have the sample locally, access the Streamlit application through this link: [https://ai-sales-call-coach.streamlit.app](https://ai-sales-call-coach.streamlit.app/).
+
+Use the sample audio to test the application:
+
+![AI Sales Call Analyzer demo page](/assets/ai-sales-call-analyzer.png)
+
+## Final Notes
+
+This project serves as a demonstration concept to showcase the potential of AI in sales coaching. It is intended for learning and exploration purposes, providing insights into how AI can assist in analyzing and improving sales conversations.
+
+If you have any questions, suggestions, or would like to discuss this concept further, please feel free to reach out to me. I'm always interested in exploring innovative applications of AI in business contexts, as well as being in touch with AI enthusiats.
+
+You can contact me through:
+
+- GitHub Issues on this repository
+- LinkedIn: https://linkedin.com/in/htaidirt
+
+2025 - Hassen Taidirt

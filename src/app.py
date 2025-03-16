@@ -5,18 +5,17 @@ from openai import OpenAI
 from pydub import AudioSegment
 import dotenv
 
-# Load environment variables from .env
 dotenv.load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
-    raise ValueError("Missing OPENAI_API_KEY in your environment variables or local .env file")
+    raise ValueError(
+        "Missing OPENAI_API_KEY in your environment variables or local .env file"
+    )
 
-# Load Whisper model
-model = whisper.load_model("base")
+whisper_model = whisper.load_model("base")
 
 
-# Function to convert audio to WAV format (if necessary)
 def convert_audio(file_path):
     """Convert audio file to WAV format if it's not already."""
     if file_path.endswith(".wav"):
@@ -28,14 +27,43 @@ def convert_audio(file_path):
     return wav_path
 
 
-# Function to transcribe audio
 def transcribe_audio(file_path):
     """Transcribes an audio file into text using Whisper."""
-    result = model.transcribe(file_path)
+    result = whisper_model.transcribe(file_path)
     return result["text"]
 
 
-# Function to analyze sales conversation
+def structure_conversation(text):
+    """Structures raw transcription into a formatted conversation."""
+    client = OpenAI()
+
+    prompt = f"""
+    Convert this raw transcription into a structured conversation format.
+    Identify the speakers and format their dialogue as:
+
+    SPEAKER NAME:
+    Their dialogue text
+
+    Raw Transcription:
+    {text}
+
+    Format each speaker's parts clearly separated by newlines.
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are an expert at converting raw transcriptions into clearly structured conversations. Identify speakers and format their dialogue cleanly.",
+            },
+            {"role": "user", "content": prompt},
+        ],
+    )
+
+    return response.choices[0].message.content
+
+
 def analyze_sales_conversation(text):
     """Sends transcribed conversation to OpenAI's gpt-x for analysis."""
     client = OpenAI()
@@ -65,39 +93,46 @@ def analyze_sales_conversation(text):
     return response.choices[0].message.content
 
 
+if __name__ == "__main__":
+    st.title("🎙 AI Sales Call Analyzer")
+    st.write(
+        "Upload an MP3 sales call, and our AI Coach will transcribe it and provide recommendations."
+    )
 
-# Streamlit UI
-st.title("🎙 AI Sales Call Analyzer")
-st.write(
-    "Upload an MP3 sales call, and our AI Coach will transcribe it and provide recommendations."
-)
+    uploaded_file = st.file_uploader(
+        "Upload an MP3, WAV or M4A file", type=["mp3", "wav", "m4a"]
+    )
 
-uploaded_file = st.file_uploader("Upload an MP3, WAV or M4A file", type=["mp3", "wav", "m4a"])
+    if uploaded_file is not None:
+        st.audio(uploaded_file, format="audio/mp3")
 
-if uploaded_file is not None:
-    st.audio(uploaded_file, format="audio/mp3")
+        # Save uploaded file
+        file_path = f"temp/{uploaded_file.name}"
+        os.makedirs("temp", exist_ok=True)
 
-    # Save uploaded file
-    file_path = f"temp/{uploaded_file.name}"
-    os.makedirs("temp", exist_ok=True)
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
 
-    with open(file_path, "wb") as f:
-        f.write(uploaded_file.getbuffer())
+        # Convert if necessary
+        file_path = convert_audio(file_path)
 
-    # Convert if necessary
-    file_path = convert_audio(file_path)
+        # Transcribe the audio
+        with st.spinner("Transcribing audio..."):
+            transcript = transcribe_audio(file_path)
 
-    # Transcribe the audio
-    with st.spinner("Transcribing audio..."):
-        transcript = transcribe_audio(file_path)
-    st.subheader("📝 Transcription")
-    st.text_area("Transcribed Sales Call:", transcript, height=200)
+        # Structure the conversation
+        with st.spinner("Structuring conversation..."):
+            structured_transcript = structure_conversation(transcript)
+        st.subheader("📝 Structured Conversation")
+        st.text_area("Structured Conversation:", structured_transcript, height=300)
 
-    # Analyze conversation
-    with st.spinner("Analyzing sales call..."):
-        analysis = analyze_sales_conversation(transcript)
-    st.subheader("📊 AI Sales Insights")
-    st.write(analysis)
+        # Analyze conversation
+        with st.spinner("Analyzing sales call..."):
+            analysis = analyze_sales_conversation(
+                structured_transcript
+            )  # Note: Now using structured transcript
+        st.subheader("📊 AI Sales Insights")
+        st.write(analysis)
 
-    # Cleanup
-    os.remove(file_path)
+        # Cleanup
+        os.remove(file_path)

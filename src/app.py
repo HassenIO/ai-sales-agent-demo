@@ -69,12 +69,20 @@ def analyze_sales_conversation(text):
     client = OpenAI()
 
     prompt = f"""
-    Analyze the following sales conversation. Identify key risks and provide recommended actions.
+    Analyze the following sales conversation, using the following 6 sales dimensions:
+    - Solution
+    - Price
+    - Decision makers
+    - Competition
+    - Planning
+    - Legal
+    Then identify key risks and provide recommended actions with expected outcomes if the actions are well implemented.
     
     Sales Call Transcript:
     {text}
 
     Output should be structured as:
+    - Sales Analysis
     - Identified Risks
     - Recommended Actions
     """
